@@ -15,15 +15,22 @@ namespace HtmlTemplateEngine
             {
                 if (span[i] == '{' && span[i + 1] == '{')
                 {
+                    // Add anything before "{{" from "offset"
+                    // "offset"----------{{
+
                     lines.Add(new Tuple<int, string, string>(0, span.Slice(offset, i - offset).ToString(), string.Empty));
                     i += 2;
                     offset += i - offset;
+                    // Move "i" until "}}"
+                    // {{------------------->"i"}}
                     while (i + 1 < span.Length && span[i] != '}' && span[i + 1] != '}')
                     {
                         i++;
                     }
                     if (i + 1 < span.Length)
                     {
+                        // Parse the string between {{--------------}}
+
                         var key = span.Slice(offset, i - offset + 1);
                         var value = string.Empty;
                         var type = 1;
@@ -42,6 +49,7 @@ namespace HtmlTemplateEngine
             }
             if (span.Length > offset)
             {
+                // Add anything after the last "}}" if have
                 lines.Add(new Tuple<int, string, string>(0, span.Slice(offset, span.Length - offset).ToString(), string.Empty));
             }
             return lines;
@@ -76,7 +84,7 @@ namespace HtmlTemplateEngine
                     case 10:
                         {
                             var index = i;
-                            if (templates[i].Item2 == "foreach")
+                            if (templates[i].Item2 == "foreach") // enter loop template
                             {
 
                                 var pieces = obj.GetType().GetProperty(templates[i].Item3).GetValue(obj) as IEnumerable<object>;
@@ -94,6 +102,7 @@ namespace HtmlTemplateEngine
                                         {
                                             sb.Append(element);
                                         }
+                                        // exit loop template
                                         if (templates[k + 1].Item1 == 10 && templates[k + 1].Item2 == "end")
                                         {
                                             offset = k + 1;
@@ -102,6 +111,7 @@ namespace HtmlTemplateEngine
                                     }
 
                                 }
+                                // let skip the the loop template in the main render loop
                                 i = offset;
                             }
                             break;
