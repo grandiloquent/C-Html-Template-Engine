@@ -5,8 +5,8 @@
 
 <p>{{Name}}</p>
 
-{{@foreach=.}}
-<p>{{Firend}}</p>
+{{@foreach=Friends}}
+<p>{{.}}</p>
 {{@end}}
 
 </div>

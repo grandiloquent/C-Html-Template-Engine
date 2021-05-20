@@ -8,7 +8,6 @@ namespace HtmlTemplateEngine
     {
         public static List<Tuple<int, string, string>> ParseStringTemplate(string str)
         {
-            // {{key}}
             var span = str.AsSpan();
             var lines = new List<Tuple<int, string, string>>();
             var offset = 0;
