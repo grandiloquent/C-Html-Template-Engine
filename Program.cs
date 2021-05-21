@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Text.Json;
 
 namespace HtmlTemplateEngine
 {
@@ -56,19 +58,11 @@ namespace HtmlTemplateEngine
         }
         static void Main(string[] args)
         {
-            var template = "<div><p>{{Name}}</p>"
- + "{{@foreach=Friends}}"
- + "<p>{{.}}</p>"
- + "{{@end}}"
- + "</div>";
+            var template = File.ReadAllText("template.txt");
 
             var templates = ParseStringTemplate(template);
             var sb = new StringBuilder();
-            var obj = new
-            {
-                Name = "Kid",
-                Friends = new[] { "One", "Two", "Three" }
-            };
+            var obj = JsonDocument.Parse(File.ReadAllText("datas.txt"));
 
             for (int i = 0; i < templates.Count; i++)
             {
@@ -87,7 +81,7 @@ namespace HtmlTemplateEngine
                             if (templates[i].Item2 == "foreach") // enter loop template
                             {
 
-                                var pieces = obj.GetType().GetProperty(templates[i].Item3).GetValue(obj) as IEnumerable<object>;
+                                var pieces = obj.RootElement.EnumerateArray();
                                 var offset = 0;
                                 foreach (var element in pieces)
                                 {
@@ -124,7 +118,7 @@ namespace HtmlTemplateEngine
                 }
 
             }
-            Console.WriteLine(sb.ToString());
+            File.WriteAllText("output.txt", sb.ToString());
 
         }
     }
